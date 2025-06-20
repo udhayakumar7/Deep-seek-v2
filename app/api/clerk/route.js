@@ -52,3 +52,22 @@ export async function POST(req) {
                     new: true,
                     upsert: true
                 });
+                break;
+
+            case 'user.deleted':
+                console.log('🗑️ Deleting user:', userData._id);
+                await User.findByIdAndDelete(userData._id);
+                break;
+
+            default:
+                console.log('⚠️ Unhandled event type:', type);
+        }
+    } catch (err) {
+        console.error('❌ DB operation failed:', err);
+        return new NextResponse('DB operation error', { status: 500 });
+    }
+
+    return NextResponse.json({
+        message: 'Webhook received and processed successfully'
+    });
+}
