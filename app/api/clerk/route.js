@@ -119,11 +119,10 @@ export async function POST(req) {
 
   const userData = {
     _id: data.id,
-    name: `${data.firstName ?? ''} ${data.lastName ?? ''}`.trim(),
-    email: data.emailAddresses?.[0]?.emailAddress ?? '',
-    image: data.imageUrl,
-    createdAt: new Date(data.createdAt),
-    updatedAt: new Date(data.updatedAt),
+    name: `${data.first_name  ?? ''} ${data.last_name ?? ''}`.trim(),
+    email: data.email_addresses?.[0]?.email_addresses ?? '',
+    image: data.image_url ,
+
   };
 
   await connectDB();
