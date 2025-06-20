@@ -2,6 +2,7 @@ import { Webhook } from 'svix';
 import connectDB from '@/app/config/db';
 import User from '@/app/models/User';
 import { NextResponse } from 'next/server';
+import { headers } from 'next/headers';
 
 export async function POST(req) {
   console.log('📥 Webhook route hit');
@@ -15,25 +16,22 @@ export async function POST(req) {
 
   const wh = new Webhook(SIGNING_SECRET);
 
+  const headerPayload = await headers()
+
   const svixHeaders = {
-    'svix-id': req.headers.get('svix-id'),
-    'svix-timestamp': req.headers.get('svix-timestamp'),
-    'svix-signature': req.headers.get('svix-signature'),
+    'svix-id': headerPayload.get('svix-id'),
+    'svix-timestamp': headerPayload.get('svix-timestamp'),
+    'svix-signature': headerPayload.get('svix-signature'),
   };
 
-  const payload = await req.text();
+  const payload = await req.json();
+  const body = JSON.stringify(payload);
 
-  let event;
-  try {
-    event = wh.verify(payload, svixHeaders);
-  } catch (err) {
-    console.error('❌ Signature verification failed:', err.message);
-    return new NextResponse('Invalid signature', { status: 400 });
-  }
+  const {data, type} =  wh.verify(payload, svixHeaders)
 
-  const { data, type } = event;
-  console.log(`📦 Event Type: ${type}`);
-  console.log('🔍 Event Data:', JSON.stringify(data, null, 2));
+
+
+ 
 
   const userData = {
     _id: data.id,
