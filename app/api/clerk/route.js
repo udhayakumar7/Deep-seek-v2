@@ -120,7 +120,7 @@ export async function POST(req) {
   const userData = {
     _id: data.id,
     name: `${data.first_name  ?? ''} ${data.last_name ?? ''}`.trim(),
-    email: data.email_address ?? '',
+    email: data.email_addresses?.[0]?.email_address ?? '',
     image: data.image_url ,
 
   };
