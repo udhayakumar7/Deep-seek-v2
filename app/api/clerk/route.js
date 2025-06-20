@@ -1,57 +1,62 @@
-import {Webhook} from 'svix';
+// /app/api/webhooks/clerk/route.js
+import { Webhook } from 'svix';
 import connectDB from '@/app/config/db';
 import User from '@/app/models/User';
-import { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 
+// Must be async function
 export async function POST(req) {
     const wh = new Webhook(process.env.SIGNING_SECRET);
 
-    const headerPlayload = await headers()
-
     const svixHeaders = {
-        'svix-id': headerPlayload.get('svix-id'),
-        'svix-timestamp': headerPlayload.get('svix-timestamp'),
-        'svix-signature': headerPlayload.get('svix-signature')
+        'svix-id': req.headers.get('svix-id'),
+        'svix-timestamp': req.headers.get('svix-timestamp'),
+        'svix-signature': req.headers.get('svix-signature')
     };
-    
-    
 
-    const playload = await req.json();
-    const body = JSON.stringify(playload);
-    const { data, type } = wh.verify(body, svixHeaders);
+    const payload = await req.text(); // Note: use `.text()` instead of `.json()` to verify body correctly
+    let event;
 
-
-    const userData ={
-        _id: data.id,
-        name: data.firstName + ' ' + data.lastName,
-        email: data.emailAddresses[0].emailAddress,
-        image: data.imageUrl,
-        createdAt: data.createdAt, 
-        updatedAt: data.updatedAt 
+    try {
+        event = wh.verify(payload, svixHeaders);
+    } catch (err) {
+        console.error('❌ Webhook signature verification failed:', err.message);
+        return new NextResponse('Invalid signature', { status: 400 });
     }
+
+    const { data, type } = event;
+
+    const userData = {
+        _id: data.id,
+        name: `${data.firstName ?? ''} ${data.lastName ?? ''}`.trim(),
+        email: data.emailAddresses?.[0]?.emailAddress ?? '',
+        image: data.imageUrl,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt
+    };
 
     await connectDB();
 
-
-    switch (type) {
-        case 'user.created':
-            await User.create(userData);
-            break;  
-
-        case 'user.updated':
-           await User.findOneAndUpdate(userData)
-            break;
-        case 'user.deleted':
-            await User.findOneAndDelete({_id: userData._id});
-            break;
-        default:
-            console.log('Unhandled event type:', type);
-            break;
+    try {
+        switch (type) {
+            case 'user.created':
+                await User.create(userData);
+                break;
+            case 'user.updated':
+                await User.findByIdAndUpdate(userData._id, userData, { new: true, upsert: true });
+                break;
+            case 'user.deleted':
+                await User.findByIdAndDelete(userData._id);
+                break;
+            default:
+                console.log('Unhandled event type:', type);
+        }
+    } catch (err) {
+        console.error('❌ DB Operation Failed:', err);
+        return new NextResponse('DB operation error', { status: 500 });
     }
-    return NextRequest.json({
-        message: 'Webhook received and processed successfully',}
-    )
 
-
+    return NextResponse.json({
+        message: 'Webhook received and processed successfully'
+    });
 }
-
