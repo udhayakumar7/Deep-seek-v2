@@ -1,9 +1,16 @@
-import React from 'react';
+'use client';
+
+import React, { useEffect } from 'react';
 import { assets } from '../assets/assets';
 import Image from 'next/image';
+import Markdown from 'react-markdown';
 
 const Message = ({ role, message }) => {
   const isUser = role === 'user';
+
+  console.log('Message component rendered with:', { role, message });
+
+
 
   return (
     <div className="flex items-center flex-col w-full max-w-3xl text-sm">
@@ -45,7 +52,7 @@ const Message = ({ role, message }) => {
                 alt="bot logo"
                 className="w-9 h-9 p-1 border border-white/15 rounded-full"
               />
-              <div className="space-y-4 w-full text-white/80">{message}</div>
+              <div className="space-y-4 w-full text-white/80"> <Markdown>{message}</Markdown>  </div> 
             </>
           )}
         </div>
