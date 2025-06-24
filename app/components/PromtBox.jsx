@@ -119,7 +119,7 @@ const PromptBox = ({ isLoading, setLoading }) => {
         onKeyDown={handleKeyDown}
         className="outline-none w-full resize-none overflow-hidden break-words bg-transparent"
         rows={2}
-        placeholder="Message Gemini"
+        placeholder="Message DeepSeek..."
         required
         onChange={(e) => setPromt(e.target.value)}
         value={prompt}
@@ -129,7 +129,7 @@ const PromptBox = ({ isLoading, setLoading }) => {
       <div className="flex items-center justify-between text-sm mt-2">
         <div className="flex items-center gap-2">
           <p className="flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition-all">
-            <Image src={assets.deepthink_icon} alt="" /> Gemini AI
+            <Image src={assets.deepthink_icon} alt="" /> DeepThink(R1) 
           </p>
           <p className="flex items-center gap-2 text-xs border border-gray-300/40 px-2 py-1 rounded-full cursor-pointer hover:bg-gray-500/20 transition-all">
             <Image src={assets.search_icon} alt="" /> Search
