@@ -31,6 +31,8 @@ export default function Home() {
     }
   }, [message]);
 
+
+
   return (
     <div>
       <div className="flex h-screen">
@@ -55,21 +57,24 @@ export default function Home() {
                 <Image src={assets.logo_icon} alt="logo" className="h-16" />
                 <p className="text-2xl font-medium">Hi, I'm DeepSeek</p>
               </div>
-              <p className="text-sm mt-2">How can I help you today?</p>
+              <p className="text-sm mt-2 pb-8">How can I help you today?</p>
             </>
           ) : (
             <div
               ref={containerRef}
-              className="relative flex flex-col items-center justify-start w-full mt-20 max-h-screen overflow-y-auto"
+              className="relative flex flex-col items-center justify-start w-full mt-20 max-h-screen overflow-y-auto pb-8"
             >
-              {console.log('Rendering messages:', message)}
+              {/* {console.log('Rendering messages:', message)} */}
+              <p className='fixed top-8 border border-transparent hover:bg-gray-500/50 px-2 rounded-lg font-semibold mb-8 cursor-pointer'>
+              {selectedChat.name || 'Chat'}
+              </p>
 
               {message.map((msg, index) => (
                 <Message key={index} role={msg.role} message={msg.content} />
               ))}
 
               {isloading && (
-                <div className="flex gap-4 max-w-3xl justify-center w-full py-3">
+                <div className="flex gap-4 max-w-3xl justify-start w-full py-3">
                   <Image
                     src={assets.logo_icon}
                     alt="loading"

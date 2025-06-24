@@ -13,7 +13,7 @@ const SideBar = ({ expand, setExpand }) => {
         openSignIn();
     };
 
-     const user = useAppContext();
+     const {user, chats, createNewChat} = useAppContext();
 
     const [openMenu, setOpenMenu] = useState({id: 0, open: false})
 
@@ -67,7 +67,7 @@ const SideBar = ({ expand, setExpand }) => {
           </div>
         </div>
 
-        <button
+        <button onClick={createNewChat}
           className={`mt-8  flex items-center justify-center cursor-pointer ${
             expand
               ? "bg-primary hover:opacity-50 rounded-2xl gap-2 p-2.5 w-max"
@@ -91,8 +91,20 @@ const SideBar = ({ expand, setExpand }) => {
           className={`mt-8 text-white/25 text-sm ${
             expand ? "block" : "hidden"
           }`}
-        >
-          <ChatLabel openMenu={openMenu} setOpenMenu={openMenu} />
+        > 
+        <p>Recent</p>
+        {
+           chats.map((chat)=> 
+            <ChatLabel
+    key={chat._id}
+    id={chat._id}
+    name={chat.name}
+    openMenu={openMenu}
+    setOpenMenu={setOpenMenu}
+  />
+           )
+        }
+          
         </div>
       </div>
       <div>
@@ -135,11 +147,11 @@ const SideBar = ({ expand, setExpand }) => {
             </>
           )}
         </div>
-        <div onClick={user.user ? null : handleSignIn} className={`flex items-center ${expand ? 'hover:bg-white/10 rounded-lg' : ' justify-center w-full'} gap-3 text-white/60 text-sm p-2 mt-2  cursor-pointer`}>
+        <div onClick={user ? null : handleSignIn} className={`flex items-center ${expand ? 'hover:bg-white/10 rounded-lg' : ' justify-center w-full'} gap-3 text-white/60 text-sm p-2 mt-2  cursor-pointer`}>
        
 
         {
-            user.user  ? <UserButton /> :   <Image src={assets.profile_icon} alt="" className="w-7" />
+            user  ? <UserButton /> :   <Image src={assets.profile_icon} alt="" className="w-7" />
         }
 
         {expand && <span>My Profile</span>}

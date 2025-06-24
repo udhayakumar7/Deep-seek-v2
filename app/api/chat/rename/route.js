@@ -2,6 +2,7 @@
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import Chat from '@/app/models/Chat';
+import connectDB from "@/app/config/db";
 export async function POST(req) {
   try {
     const { userId } = getAuth(req);
